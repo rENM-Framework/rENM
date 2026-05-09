@@ -4,18 +4,12 @@
 \alias{rENM}
 \title{Run the end-to-end rENM pipeline for a single bird species}
 \usage{
-rENM(alpha_code, project_dir = NULL)
+rENM(alpha_code)
 }
 \arguments{
 \item{alpha_code}{Character scalar. The four-letter bird banding code
 for the target species. The value is normalized to uppercase before
 processing.}
-
-\item{project_dir}{Character. Path to the rENM project root. If
-\code{NULL} (default), resolved via
-\code{\link[rENM.core]{rENM_project_dir}} (argument,
-\code{rENM.project_dir} option, \code{RENM_PROJECT_DIR} environment
-variable).}
 }
 \value{
 Invisibly returns a named list containing:
@@ -78,9 +72,10 @@ to the species log file at:
 <project-dir>/runs/<alpha_code>/_log.txt
 }
 
-The project directory is resolved with
-\code{rENM.core::rENM_project_dir()}, avoiding hard-coded paths and
-supporting CRAN-compliant package behavior.
+The project directory is resolved automatically by each framework
+package via \code{rENM.core::rENM_project_dir()}, which reads from
+the \code{rENM.project_dir} option or the \code{RENM_PROJECT_DIR}
+environment variable.
 
 Log entries are written in the framework's standard timestamped format
 and bracketed with 72-character separator lines for readability.
@@ -92,7 +87,6 @@ elapsed time are recorded even if the pipeline terminates early, and
 \examples{
 \dontrun{
 rENM("CASP")
-rENM("CASP", project_dir = "/projects/rENM")
 }
 
 }

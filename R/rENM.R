@@ -46,9 +46,10 @@
 #' <project-dir>/runs/<alpha_code>/_log.txt
 #' }
 #'
-#' The project directory is resolved with
-#' \code{rENM.core::rENM_project_dir()}, avoiding hard-coded paths and
-#' supporting CRAN-compliant package behavior.
+#' The project directory is resolved automatically by each framework
+#' package via \code{rENM.core::rENM_project_dir()}, which reads from
+#' the \code{rENM.project_dir} option or the \code{RENM_PROJECT_DIR}
+#' environment variable.
 #'
 #' Log entries are written in the framework's standard timestamped format
 #' and bracketed with 72-character separator lines for readability.
@@ -60,11 +61,6 @@
 #' @param alpha_code Character scalar. The four-letter bird banding code
 #'   for the target species. The value is normalized to uppercase before
 #'   processing.
-#' @param project_dir Character. Path to the rENM project root. If
-#'   \code{NULL} (default), resolved via
-#'   \code{\link[rENM.core]{rENM_project_dir}} (argument,
-#'   \code{rENM.project_dir} option, \code{RENM_PROJECT_DIR} environment
-#'   variable).
 #'
 #' @return Invisibly returns a named list containing:
 #' \itemize{
@@ -84,14 +80,13 @@
 #' @examples
 #' \dontrun{
 #' rENM("CASP")
-#' rENM("CASP", project_dir = "/projects/rENM")
 #' }
 #'
 #' @seealso
 #' \code{\link[rENM.core:rENM_project_dir]{rENM.core::rENM_project_dir}}
 #'
 #' @export
-rENM <- function(alpha_code, project_dir = NULL) {
+rENM <- function(alpha_code) {
 
   if (!is.character(alpha_code) || length(alpha_code) != 1L || is.na(alpha_code)) {
     stop("'alpha_code' must be a single non-missing character value.", call. = FALSE)
@@ -124,7 +119,7 @@ rENM <- function(alpha_code, project_dir = NULL) {
     )
   }
 
-  project_dir <- rENM.core::rENM_project_dir(project_dir)
+  project_dir <- rENM.core::rENM_project_dir()
   run_dir     <- file.path(project_dir, "runs", alpha_code)
   log_file    <- file.path(run_dir, "_log.txt")
 
@@ -172,9 +167,9 @@ rENM <- function(alpha_code, project_dir = NULL) {
     .log_write(separator, "\n")
     .log_line(paste0("Finished rENM() for ", alpha_code,
                      " with status: ", status, "."), time = end_time)
-    .log_line(paste0("Run start time: ",       .timestamp(start_time)), time = end_time)
-    .log_line(paste0("Run end time: ",         .timestamp(end_time)),   time = end_time)
-    .log_line(paste0("Total elapsed time: ",   format(elapsed_time)),   time = end_time)
+    .log_line(paste0("Run start time: ",     .timestamp(start_time)), time = end_time)
+    .log_line(paste0("Run end time: ",       .timestamp(end_time)),   time = end_time)
+    .log_line(paste0("Total elapsed time: ", format(elapsed_time)),   time = end_time)
     .log_write(separator, "\n")
   }, add = TRUE)
 
@@ -199,67 +194,67 @@ rENM <- function(alpha_code, project_dir = NULL) {
     # --------------------------------------------------------------------------
     # --- DATA ASSEMBLY --------------------------------------------------------
 
-    rENM.data::get_ebird_occurrences(alpha_code, project_dir = project_dir)
-    rENM.data::remove_duplicate_occurrences(alpha_code, project_dir = project_dir)
-    rENM.data::thin_occurrences2(alpha_code, project_dir = project_dir)
-    rENM.data::limit_record_count(alpha_code, project_dir = project_dir)
-    rENM.data::tidy_occurrences(alpha_code, project_dir = project_dir)
-    rENM.data::find_range_extent(alpha_code, project_dir = project_dir)
-    rENM.data::get_merra_variables(alpha_code, project_dir = project_dir)
+    rENM.data::get_ebird_occurrences(alpha_code)
+    rENM.data::remove_duplicate_occurrences(alpha_code)
+    rENM.data::thin_occurrences2(alpha_code)
+    rENM.data::limit_record_count(alpha_code)
+    rENM.data::tidy_occurrences(alpha_code)
+    rENM.data::find_range_extent(alpha_code)
+    rENM.data::get_merra_variables(alpha_code)
 
     # --------------------------------------------------------------------------
     # --- TIME SERIES CONSTRUCTION ---------------------------------------------
 
-    rENM.model::stage_occurrences(alpha_code, project_dir = project_dir)
-    rENM.model::screen_by_convergence2(alpha_code, project_dir = project_dir)
-    rENM.model::stage_screened_variables(alpha_code, project_dir = project_dir)
-    rENM.model::create_timeseries(alpha_code, project_dir = project_dir)
+    rENM.model::stage_occurrences(alpha_code)
+    rENM.model::screen_by_convergence2(alpha_code)
+    rENM.model::stage_screened_variables(alpha_code)
+    rENM.model::create_timeseries(alpha_code)
 
     # --------------------------------------------------------------------------
     # --- TIME SERIES ANALYSIS -------------------------------------------------
 
-    rENM.analysis::find_suitability_trend(alpha_code, project_dir = project_dir)
-    rENM.analysis::find_trend_percentages(alpha_code, project_dir = project_dir)
-    rENM.analysis::find_range_change_percentages(alpha_code, project_dir = project_dir)
-    rENM.analysis::create_state_trend_analysis(alpha_code, project_dir = project_dir)
-    rENM.analysis::analyze_weighted_centroids(alpha_code, project_dir = project_dir)
-    rENM.analysis::find_bioclimatic_velocity(alpha_code, project_dir = project_dir)
-    rENM.analysis::save_trend_plot_with_centroids(alpha_code, project_dir = project_dir)
-    rENM.analysis::gather_variable_contributions(alpha_code, project_dir = project_dir)
-    rENM.analysis::summarize_variable_contributions(alpha_code, project_dir = project_dir)
-    rENM.analysis::create_suitability_change_map(alpha_code, project_dir = project_dir)
-    rENM.analysis::create_hot_spot_map(alpha_code, project_dir = project_dir)
+    rENM.analysis::find_suitability_trend(alpha_code)
+    rENM.analysis::find_trend_percentages(alpha_code)
+    rENM.analysis::find_range_change_percentages(alpha_code)
+    rENM.analysis::create_state_trend_analysis(alpha_code)
+    rENM.analysis::analyze_weighted_centroids(alpha_code)
+    rENM.analysis::find_bioclimatic_velocity(alpha_code)
+    rENM.analysis::save_trend_plot_with_centroids(alpha_code)
+    rENM.analysis::gather_variable_contributions(alpha_code)
+    rENM.analysis::summarize_variable_contributions(alpha_code)
+    rENM.analysis::create_suitability_change_map(alpha_code)
+    rENM.analysis::create_hot_spot_map(alpha_code)
 
     # --------------------------------------------------------------------------
     # --- REPORT GENERATION ----------------------------------------------------
 
-    rENM.reports::gather_suitability_maps(alpha_code, project_dir = project_dir)
-    rENM.reports::gather_range_maps(alpha_code, project_dir = project_dir)
-    rENM.reports::gather_suitability_trend_stats(alpha_code, project_dir = project_dir)
-    rENM.reports::create_suitability_trend_summary_table(alpha_code, project_dir = project_dir)
-    rENM.reports::assemble_suitability_timeseries_page(alpha_code, project_dir = project_dir)
-    rENM.reports::assemble_range_timeseries_page(alpha_code, project_dir = project_dir)
-    rENM.reports::assemble_suitability_trends_page(alpha_code, project_dir = project_dir)
-    rENM.reports::assemble_state_trends_page(alpha_code, project_dir = project_dir)
-    rENM.reports::create_variable_trend_summary_table(alpha_code, project_dir = project_dir)
-    rENM.reports::assemble_variable_trends_page(alpha_code, project_dir = project_dir)
-    rENM.reports::gather_top_variable_trend_maps(alpha_code, project_dir = project_dir)
-    rENM.reports::assemble_variable_trend_maps_page(alpha_code, project_dir = project_dir)
-    rENM.reports::create_centroid_trend_summary_table(alpha_code, project_dir = project_dir)
-    rENM.reports::assemble_centroid_trends_page(alpha_code, project_dir = project_dir)
+    rENM.reports::gather_suitability_maps(alpha_code)
+    rENM.reports::gather_range_maps(alpha_code)
+    rENM.reports::gather_suitability_trend_stats(alpha_code)
+    rENM.reports::create_suitability_trend_summary_table(alpha_code)
+    rENM.reports::assemble_suitability_timeseries_page(alpha_code)
+    rENM.reports::assemble_range_timeseries_page(alpha_code)
+    rENM.reports::assemble_suitability_trends_page(alpha_code)
+    rENM.reports::assemble_state_trends_page(alpha_code)
+    rENM.reports::create_variable_trend_summary_table(alpha_code)
+    rENM.reports::assemble_variable_trends_page(alpha_code)
+    rENM.reports::gather_top_variable_trend_maps(alpha_code)
+    rENM.reports::assemble_variable_trend_maps_page(alpha_code)
+    rENM.reports::create_centroid_trend_summary_table(alpha_code)
+    rENM.reports::assemble_centroid_trends_page(alpha_code)
 
     # --------------------------------------------------------------------------
     # --- GenAI ANALYSIS -------------------------------------------------------
 
-    rENM.ai::assemble_ai_package(alpha_code, project_dir = project_dir)
-    rENM.ai::submit_to_chatgpt(alpha_code, project_dir = project_dir)
-    # rENM.ai::submit_to_claude(alpha_code, project_dir = project_dir)
-    rENM.ai::render_ai_docx(alpha_code, project_dir = project_dir)
+    rENM.ai::assemble_ai_package(alpha_code)
+    rENM.ai::submit_to_chatgpt(alpha_code)
+    # rENM.ai::submit_to_claude(alpha_code)
+    rENM.ai::render_ai_docx(alpha_code)
 
     # --------------------------------------------------------------------------
     # --- FINAL REPORT ---------------------------------------------------------
 
-    rENM.reports::assemble_final_report(alpha_code, project_dir = project_dir)
+    rENM.reports::assemble_final_report(alpha_code)
 
     # ==========================================================================
 
@@ -291,9 +286,9 @@ rENM <- function(alpha_code, project_dir = NULL) {
     .log_write(separator, "\n")
     .log_line(paste0("ERROR in rENM() for ", alpha_code, ": ", msg),
               time = end_time)
-    .log_line(paste0("Run start time: ",           .timestamp(start_time)), time = end_time)
-    .log_line(paste0("Run end time: ",             .timestamp(end_time)),   time = end_time)
-    .log_line(paste0("Elapsed time before failure: ", format(elapsed_time)), time = end_time)
+    .log_line(paste0("Run start time: ",              .timestamp(start_time)), time = end_time)
+    .log_line(paste0("Run end time: ",                .timestamp(end_time)),   time = end_time)
+    .log_line(paste0("Elapsed time before failure: ", format(elapsed_time)),   time = end_time)
     .log_write(separator, "\n")
 
     stop(e)
