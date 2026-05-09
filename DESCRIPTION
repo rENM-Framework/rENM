@@ -1,0 +1,28 @@
+Package: rENM
+Type: Package
+Title: Top-level orchestration for the rENM framework
+Version: 0.1.0.9000
+Author: John L. Schnase
+Maintainer: John L. Schnase <rENM.Framework@gmail.com>
+ORCID: 0000-0001-7473-3977
+Description: The rENM framework is a modular system for
+    reconstructing and analyzing long-term ecological niche
+    dynamics using time-indexed environmental data and species
+    occurrence records. This package provides the top-level
+    rENM() function, which executes the complete modeling
+    pipeline for a single species by orchestrating the
+    installed rENM framework packages in sequence.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+URL: https://github.com/rENM-Framework/rENM
+BugReports: https://github.com/rENM-Framework/rENM/issues
+Imports:
+    rENM.core,
+    rENM.data,
+    rENM.model,
+    rENM.analysis,
+    rENM.ai,
+    rENM.reports,
+    utils
