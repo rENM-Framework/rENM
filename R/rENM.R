@@ -164,6 +164,8 @@ rENM <- function(alpha_code) {
     cat(separator, "\n", sep = "")
     utils::flush.console()
 
+    .log_write("", "\n")
+    .log_write(separator, "\n")
     .log_write(separator, "\n")
     .log_line(paste0("Finished rENM() for ", alpha_code,
                      " with status: ", status, "."), time = end_time)
@@ -178,8 +180,6 @@ rENM <- function(alpha_code) {
       alpha_code, " ...\n", sep = "")
   utils::flush.console()
 
-  .log_write("", "\n")
-  .log_write(separator, "\n")
   .log_write(separator, "\n")
   .log_line(paste0("Starting rENM() for ", alpha_code, " ..."),
             time = start_time)
