@@ -13,13 +13,15 @@
 
   if (length(missing) > 0L) {
     packageStartupMessage(
-      "rENM: the following framework packages are not installed and must be\n",
-      "  present before rENM() can run:\n",
-      paste0("  - ", missing, collapse = "\n")
+      "rENM: The following rENM Framework packages are not\n",
+      "installed and must be present before rENM() can run:\n",
+      paste0("- ", missing, collapse = "\n")
     )
   } else {
     packageStartupMessage(
-      "rENM: all framework packages found. Run rENM(\"ALPH\") to start."
+      "rENM: Welcome to the rENM Framework!\n",
+      "      All framework packages are present.\n",
+      "      Run rENM(\"alpha_code\") to start ...\n"
     )
   }
 }
