@@ -8,7 +8,7 @@
 
 `rENM` is the top-level orchestration package for the rENM Framework — a modular system for reconstructing and analyzing long-term ecological niche dynamics using time-indexed environmental data and species occurrence records.
 
-It provides a single exported function, `rENM()`, which runs the complete modeling pipeline for a target species by calling the installed rENM framework packages in sequence.
+It provides a single exported function, `rENM()`, which runs the complete modeling pipeline for a target species by calling the installed rENM Framework packages in sequence.
 
 ## Framework packages
 
@@ -23,7 +23,7 @@ It provides a single exported function, `rENM()`, which runs the complete modeli
 
 \## Installation
 
-Install all framework packages from GitHub, then install `rENM`:
+Install all Framework packages from GitHub, then install `rENM`:
 
 ``` r
 # install.packages("remotes")

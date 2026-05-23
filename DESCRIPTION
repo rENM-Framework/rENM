@@ -8,7 +8,7 @@ Authors@R: person(given = "John L.", family = "Schnase",
     comment = c(ORCID = "0000-0001-7473-3977"))
 Description: Provides the top-level rENM() function, which executes the
     complete retrospective ecological niche modeling pipeline for a single
-    species by orchestrating the installed rENM framework packages in
+    species by orchestrating the installed rENM Framework packages in
     sequence -- from occurrence extraction and environmental variable
     preparation through ensemble modeling, suitability trend analysis,
     AI-assisted interpretation, and final report assembly.
@@ -27,3 +27,4 @@ Imports:
     rENM.reports,
     utils
 Config/roxygen2/version: 8.0.0
+
