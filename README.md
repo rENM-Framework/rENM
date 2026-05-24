@@ -21,7 +21,46 @@ It provides a single exported function, `rENM()`, which runs the complete modeli
 | `rENM.ai` | AI package assembly, submission, and document rendering |
 | `rENM.reports` | Report tables, summary pages, and final report assembly |
 
-\## Installation
+## System requirements
+
+### R
+
+R ≥ 4.1.0. All R package dependencies are installed automatically when you install the Framework packages from GitHub (see below). Two packages pull in notably heavy dependencies:
+
+- **`rENM.model`** — depends on `sdm`, which in turn requires `randomForest`, `gbm`, and `earth` as modeling back-ends. These are listed under `Suggests` and installed on first use.
+- **`rENM.analysis`** — depends on `rstanarm` for Bayesian trend estimation. `rstanarm` is large and may take several minutes to compile on first install.
+
+### LibreOffice
+
+Required by `rENM.ai` to convert AI-generated DOCX reports to PDF.
+
+Download from <https://www.libreoffice.org> and install normally. On macOS, LibreOffice installs to `/Applications` and its `soffice` binary is **not** added to `PATH` automatically. Run this once in Terminal after installing:
+
+``` bash
+sudo ln -s /Applications/LibreOffice.app/Contents/MacOS/soffice /usr/local/bin/soffice
+```
+
+On Linux, install via your package manager (`apt install libreoffice` or equivalent); `soffice` is placed on `PATH` automatically.
+
+### Chrome or Chromium
+
+Required by `rENM.reports` to render summary tables as PNG and PDF files. The R packages `webshot2`, `pagedown`, and `chromote` (all under `Suggests` in `rENM.reports`) drive a headless Chrome browser for this rendering step.
+
+Install the R packages first:
+
+``` r
+install.packages(c("chromote", "webshot2", "pagedown"))
+```
+
+Then verify Chrome is found:
+
+``` r
+chromote::find_chrome()
+```
+
+If that throws an error, install Google Chrome from <https://www.google.com/chrome/> and re-run `chromote::find_chrome()` to confirm. PNG and PDF outputs are silently skipped (with a console note) if Chrome is unavailable; the Excel output is always written regardless.
+
+## Installation
 
 Install all Framework packages from GitHub, then install `rENM`:
 
