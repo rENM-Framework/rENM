@@ -228,22 +228,15 @@ rENM <- function(alpha_code) {
     rENM.analysis::create_hot_spot_map(alpha_code)
 
     # --------------------------------------------------------------------------
-    # --- REPORT GENERATION ----------------------------------------------------
+    # --- SUMMARIZE OUTPUTS ----------------------------------------------------
 
     rENM.reports::gather_suitability_maps(alpha_code)
     rENM.reports::gather_range_maps(alpha_code)
     rENM.reports::gather_suitability_trend_stats(alpha_code)
     rENM.reports::create_suitability_trend_summary_table(alpha_code)
-    rENM.reports::assemble_suitability_timeseries_page(alpha_code)
-    rENM.reports::assemble_range_timeseries_page(alpha_code)
-    rENM.reports::assemble_suitability_trends_page(alpha_code)
-    rENM.reports::assemble_state_trends_page(alpha_code)
     rENM.reports::create_variable_trend_summary_table(alpha_code)
-    rENM.reports::assemble_variable_trends_page(alpha_code)
     rENM.reports::gather_top_variable_trend_maps(alpha_code)
-    rENM.reports::assemble_variable_trend_maps_page(alpha_code)
     rENM.reports::create_centroid_trend_summary_table(alpha_code)
-    rENM.reports::assemble_centroid_trends_page(alpha_code)
 
     # --------------------------------------------------------------------------
     # --- GenAI ANALYSIS -------------------------------------------------------
@@ -254,8 +247,15 @@ rENM <- function(alpha_code) {
     rENM.ai::render_ai_docx(alpha_code)
 
     # --------------------------------------------------------------------------
-    # --- FINAL REPORT ---------------------------------------------------------
+    # --- REPORT GENERATION ----------------------------------------------------
 
+    rENM.reports::assemble_suitability_timeseries_page(alpha_code)
+    rENM.reports::assemble_range_timeseries_page(alpha_code)
+    rENM.reports::assemble_suitability_trends_page(alpha_code)
+    rENM.reports::assemble_state_trends_page(alpha_code)
+    rENM.reports::assemble_variable_trends_page(alpha_code)
+    rENM.reports::assemble_variable_trend_maps_page(alpha_code)
+    rENM.reports::assemble_centroid_trends_page(alpha_code)
     rENM.reports::assemble_final_report(alpha_code)
 
     # ==========================================================================
