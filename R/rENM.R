@@ -253,9 +253,9 @@ rENM <- function(alpha_code) {
     rENM.reports::assemble_range_timeseries_page(alpha_code)
     rENM.reports::assemble_suitability_trends_page(alpha_code)
     rENM.reports::assemble_state_trends_page(alpha_code)
+    rENM.reports::assemble_centroid_trends_page(alpha_code)
     rENM.reports::assemble_variable_trends_page(alpha_code)
     rENM.reports::assemble_variable_trend_maps_page(alpha_code)
-    rENM.reports::assemble_centroid_trends_page(alpha_code)
     rENM.reports::assemble_final_report(alpha_code)
 
     # ==========================================================================
