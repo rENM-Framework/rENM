@@ -84,11 +84,7 @@ library(rENM)
 rENM("CASP")
 ```
 
-The function accepts any four-letter bird banding code. The project directory is resolved automatically via `rENM.core::rENM_project_dir()`, or can be supplied explicitly:
-
-``` r
-rENM("CASP", project_dir = "/path/to/project")
-```
+The function accepts any four-letter bird banding code. The project directory is resolved automatically via `rENM.core::rENM_project_dir()`, which reads from the `rENM.project_dir` option or the `RENM_PROJECT_DIR` environment variable.
 
 ## Pipeline stages
 
