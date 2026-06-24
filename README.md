@@ -13,7 +13,7 @@ It provides a single exported function, `rENM()`, which runs the complete modeli
 ## Framework packages
 
 | Package | Role |
-|----|----|
+|------------------------------------|------------------------------------|
 | `rENM.core` | Shared infrastructure: paths, config, logging |
 | `rENM.data` | eBird and MERRA data acquisition and preparation |
 | `rENM.model` | Occurrence staging, variable screening, time-series construction |
@@ -32,7 +32,7 @@ R ≥ 4.1.0. All R package dependencies are installed automatically when you ins
 
 ### LibreOffice
 
-Required by `rENM.ai` to convert AI-generated DOCX reports to PDF.
+Required by `rENM.ai` to convert AI-generated DOCX reports to PDF. 
 
 Download from <https://www.libreoffice.org> and install normally. On macOS, LibreOffice installs to `/Applications` and its `soffice` binary is **not** added to `PATH` automatically. Run this once in Terminal after installing:
 
