@@ -201,7 +201,7 @@ rENM <- function(alpha_code) {
     rENM.data::thin_occurrences2(alpha_code)
     rENM.data::limit_record_count(alpha_code)
     rENM.data::tidy_occurrences(alpha_code)
-    rENM.data::find_range_extent(alpha_code)
+    rENM.data::find_occurrence_extent(alpha_code)
     rENM.data::get_merra_variables(alpha_code)
 
     # --------------------------------------------------------------------------
