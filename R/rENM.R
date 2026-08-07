@@ -205,7 +205,7 @@ rENM <- function(alpha_code) {
     rENM.data::get_merra_variables(alpha_code)
 
     # --------------------------------------------------------------------------
-    # --- TIME SERIES CONSTRUCTION ---------------------------------------------
+    # --- TIME SERIES CONSTRUCTION --------------------------------------------
 
     rENM.model::stage_occurrences(alpha_code)
     rENM.model::screen_by_convergence2(alpha_code)
