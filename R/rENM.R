@@ -62,9 +62,27 @@
 #'   for the target species. The value is normalized to uppercase before
 #'   processing.
 #'
+#' @param seed Integer scalar, or \code{NULL}. Random seed for the run.
+#'   Default \code{42}.
+#'
+#'   Several pipeline stages are stochastic: occurrence records are
+#'   subsampled by \code{limit_record_count()}, variables are screened by
+#'   \code{screen_by_convergence2()}, and \code{create_ensemble_model()}
+#'   draws background points and replicate partitions. Fixing the seed
+#'   makes a run reproducible, so a published result can be regenerated
+#'   exactly. Passing \code{NULL} restores the previous behavior of a
+#'   freshly chosen seed on every run.
+#'
+#'   Note what this does and does not buy. A fixed seed makes the run
+#'   repeatable; it does not make any individual figure more reliable,
+#'   since it simply selects one realization from the distribution the
+#'   pipeline would otherwise sample. State-level statistics computed over
+#'   a small number of raster cells remain sensitive to that choice.
+#'
 #' @return Invisibly returns a named list containing:
 #' \itemize{
 #'   \item \code{alpha_code}: normalized four-letter species code,
+#'   \item \code{seed}: the random seed used for the run,
 #'   \item \code{start_time}: POSIXct start time,
 #'   \item \code{end_time}: POSIXct end time,
 #'   \item \code{elapsed_time}: difftime object giving total elapsed time,
@@ -86,7 +104,7 @@
 #' \code{\link[rENM.core:rENM_project_dir]{rENM.core::rENM_project_dir}}
 #'
 #' @export
-rENM <- function(alpha_code) {
+rENM <- function(alpha_code, seed = 42) {
 
   if (!is.character(alpha_code) || length(alpha_code) != 1L || is.na(alpha_code)) {
     stop("'alpha_code' must be a single non-missing character value.", call. = FALSE)
@@ -96,6 +114,16 @@ rENM <- function(alpha_code) {
 
   if (nchar(alpha_code) != 4L) {
     stop("'alpha_code' must be a four-letter bird banding code.", call. = FALSE)
+  }
+
+  if (!is.null(seed)) {
+    if (!is.numeric(seed) || length(seed) != 1L || !is.finite(seed)) {
+      stop("'seed' must be a finite numeric scalar or NULL.", call. = FALSE)
+    }
+    # Covers limit_record_count() and create_ensemble_model(), which draw on
+    # the global RNG stream; screen_by_convergence2() is seeded explicitly
+    # below because it seeds itself and would otherwise pick its own.
+    set.seed(seed)
   }
 
   .required_pkgs <- c(
@@ -183,6 +211,9 @@ rENM <- function(alpha_code) {
   .log_write(separator, "\n")
   .log_line(paste0("Starting rENM() for ", alpha_code, " ..."),
             time = start_time)
+  .log_line(paste0("Random seed:  ",
+                   if (is.null(seed)) "none (run is not reproducible)" else seed),
+            time = start_time)
   .log_line(paste0("Run start time: ", .timestamp(start_time)),
             time = start_time)
   .log_write(separator, "\n")
@@ -208,7 +239,7 @@ rENM <- function(alpha_code) {
     # --- TIME SERIES CONSTRUCTION --------------------------------------------
 
     rENM.model::stage_occurrences(alpha_code)
-    rENM.model::screen_by_convergence2(alpha_code)
+    rENM.model::screen_by_convergence2(alpha_code, seed = seed)
     rENM.model::stage_screened_variables(alpha_code)
     rENM.model::create_timeseries(alpha_code)
 
@@ -266,6 +297,7 @@ rENM <- function(alpha_code) {
 
     invisible(list(
       alpha_code   = alpha_code,
+      seed         = seed,
       start_time   = start_time,
       end_time     = end_time,
       elapsed_time = elapsed_time,
