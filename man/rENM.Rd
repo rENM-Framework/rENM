@@ -33,6 +33,10 @@ Invisibly returns a named list containing:
 \itemize{
 \item \code{alpha_code}: normalized four-letter species code,
 \item \code{seed}: the random seed used for the run,
+\item \code{ai_narrative}: logical, whether the GenAI narrative section
+was produced. A failure there does not stop the run or the report,
+since the narrative depends on an external service and everything
+else is already computed by that point,
 \item \code{start_time}: POSIXct start time,
 \item \code{end_time}: POSIXct end time,
 \item \code{elapsed_time}: difftime object giving total elapsed time,
