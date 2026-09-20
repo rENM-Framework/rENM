@@ -83,6 +83,10 @@
 #' \itemize{
 #'   \item \code{alpha_code}: normalized four-letter species code,
 #'   \item \code{seed}: the random seed used for the run,
+#'   \item \code{ai_narrative}: logical, whether the GenAI narrative section
+#'     was produced. A failure there does not stop the run or the report,
+#'     since the narrative depends on an external service and everything
+#'     else is already computed by that point,
 #'   \item \code{start_time}: POSIXct start time,
 #'   \item \code{end_time}: POSIXct end time,
 #'   \item \code{elapsed_time}: difftime object giving total elapsed time,
@@ -273,10 +277,26 @@ rENM <- function(alpha_code, seed = 42) {
     # --------------------------------------------------------------------------
     # --- GenAI ANALYSIS -------------------------------------------------------
 
-    rENM.ai::assemble_ai_package(alpha_code)
-    rENM.ai::submit_to_chatgpt(alpha_code)
-    # rENM.ai::submit_to_claude(alpha_code)
-    rENM.ai::render_ai_docx(alpha_code)
+    # The narrative depends on an external service that can fail for reasons
+    # having nothing to do with the data: a timeout, a rate limit, an outage.
+    # Everything of scientific value is computed and written by this point,
+    # so a failure here costs the narrative section rather than the run.
+    # assemble_final_report() treats that page as optional, so the report
+    # still assembles without it.
+    ai_narrative <- tryCatch({
+      rENM.ai::assemble_ai_package(alpha_code)
+      rENM.ai::submit_to_chatgpt(alpha_code)
+      # rENM.ai::submit_to_claude(alpha_code)
+      rENM.ai::render_ai_docx(alpha_code)
+      TRUE
+    }, error = function(e) {
+      msg <- conditionMessage(e)
+      message("[", .timestamp(Sys.time()), "] GenAI narrative failed for ",
+              alpha_code, "; continuing without it: ", msg)
+      utils::flush.console()
+      .log_line(paste0("GenAI narrative FAILED (run continues): ", msg))
+      FALSE
+    })
 
     # --------------------------------------------------------------------------
     # --- REPORT GENERATION ----------------------------------------------------
@@ -299,6 +319,7 @@ rENM <- function(alpha_code, seed = 42) {
     invisible(list(
       alpha_code   = alpha_code,
       seed         = seed,
+      ai_narrative = ai_narrative,
       start_time   = start_time,
       end_time     = end_time,
       elapsed_time = elapsed_time,
