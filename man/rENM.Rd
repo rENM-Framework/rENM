@@ -4,17 +4,35 @@
 \alias{rENM}
 \title{Run the end-to-end rENM pipeline for a single bird species}
 \usage{
-rENM(alpha_code)
+rENM(alpha_code, seed = 42)
 }
 \arguments{
 \item{alpha_code}{Character scalar. The four-letter bird banding code
 for the target species. The value is normalized to uppercase before
 processing.}
+
+\item{seed}{Integer scalar, or \code{NULL}. Random seed for the run.
+Default \code{42}.
+
+Several pipeline stages are stochastic: occurrence records are
+subsampled by \code{limit_record_count()}, variables are screened by
+\code{screen_by_convergence2()}, and \code{create_ensemble_model()}
+draws background points and replicate partitions. Fixing the seed
+makes a run reproducible, so a published result can be regenerated
+exactly. Passing \code{NULL} restores the previous behavior of a
+freshly chosen seed on every run.
+
+Note what this does and does not buy. A fixed seed makes the run
+repeatable; it does not make any individual figure more reliable,
+since it simply selects one realization from the distribution the
+pipeline would otherwise sample. State-level statistics computed over
+a small number of raster cells remain sensitive to that choice.}
 }
 \value{
 Invisibly returns a named list containing:
 \itemize{
 \item \code{alpha_code}: normalized four-letter species code,
+\item \code{seed}: the random seed used for the run,
 \item \code{start_time}: POSIXct start time,
 \item \code{end_time}: POSIXct end time,
 \item \code{elapsed_time}: difftime object giving total elapsed time,

@@ -241,7 +241,7 @@ rENM <- function(alpha_code, seed = 42) {
     rENM.model::stage_occurrences(alpha_code)
     rENM.model::screen_by_convergence2(alpha_code, seed = seed)
     rENM.model::stage_screened_variables(alpha_code)
-    rENM.model::create_timeseries(alpha_code)
+    rENM.model::create_timeseries(alpha_code, seed = seed)
 
     # --------------------------------------------------------------------------
     # --- TIME SERIES ANALYSIS -------------------------------------------------
