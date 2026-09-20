@@ -257,6 +257,7 @@ rENM <- function(alpha_code, seed = 42) {
     rENM.analysis::summarize_variable_contributions(alpha_code)
     rENM.analysis::create_suitability_change_map(alpha_code)
     rENM.analysis::create_hot_spot_map(alpha_code)
+    rENM.analysis::find_boundary_trend_statistics(alpha_code)
 
     # --------------------------------------------------------------------------
     # --- SUMMARIZE OUTPUTS ----------------------------------------------------
