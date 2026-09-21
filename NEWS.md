@@ -1,15 +1,18 @@
 # rENM 0.2.0.9000
-
+- `find_trend_percentages()` now runs twice, once on the suitability trend
+  and once on the change trend, the second call placed after
+  `create_suitability_change_map()` because that is what produces the
+  raster it reads. Together the two CSVs supply every area and percentage
+  the narrative reports, which previously the language model computed
+  itself from the GeoTIFFs.
 - The GenAI narrative block no longer aborts the run when it fails. It depends on an external service that can fail for reasons unrelated to the data — a timeout, a rate limit, an outage — and everything of scientific value is computed and written by the time it runs. A failure there previously propagated to the single `tryCatch()` wrapping the whole pipeline and took the entire report-generation block with it, so a flaky API call cost the assembled report even though every input to it already existed. The failure is now logged, the run continues, and the report assembles without that section; `assemble_final_report()` treats the narrative page as optional. The returned list gains `ai_narrative`, a logical recording whether the section was produced.
 - Added `rENM.analysis::find_boundary_trend_statistics()` to the pipeline, after `create_hot_spot_map()`. It compares trend behavior inside the GAP range against the surrounding buffer ring, which a range-based statistic cannot show.
 - The seed is threaded to `create_timeseries()` as well as `screen_by_convergence2()`. Reproducibility requires the corresponding `rENM.model` changes, since that package previously seeded its ensemble-model workers from the wall clock.
 - Added a `seed` argument to `rENM()`, defaulting to `42`, making a run reproducible. Several pipeline stages draw on the random number generator — `limit_record_count()` subsamples occurrence records, `screen_by_convergence2()` screens variables, and `create_ensemble_model()` draws background points and replicate partitions — and none were previously seeded, so repeating a run on identical inputs produced different state-level results. Observed between two Pinyon Jay runs sharing the same extent and code: Idaho's positive-trend percentage moved from 98.4 to 11.3, and Oregon's hot spot percentage from 82.1 to 19.5. The seed is recorded in the run log and returned in the result. Passing `seed = NULL` restores the previous per-run random behavior. Note that a fixed seed makes a run repeatable rather than more reliable: it selects one realization from the distribution the pipeline would otherwise sample, and statistics computed over few raster cells stay sensitive to that choice.
-
 - Changed default extent determination to `find_range_extent()`, superseding the `find_occurrence_extent()` default noted below (neither shipped in a release). GAP range exists for effectively every species, including low-occurrence-record "Data Needs" species, and gives state-level and cross-species comparisons a denominator that does not shift between runs as occurrence records accumulate. `find_range_extent()` now buffers the range polygon outward by 250 km before taking its bounding box, so the trend surface is not clipped at the historic range edge; see that function's help for the derivation of the buffer distance.
 - Changed default extent determination to find_occurrence_extent().
 
 # rENM 0.1.0
-
 - Initial release.
 - Added `rENM()`, the top-level pipeline orchestration function for the rENM framework.
 - Added startup messaging via `.onAttach()` that checks for all required framework packages on load.
