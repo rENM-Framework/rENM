@@ -1,4 +1,13 @@
 # rENM 0.2.0.9000
+- Added an `ai` argument to `rENM()`, one of `"chatgpt"` (default),
+  `"claude"`, or `NULL`, selecting which provider writes the narrative
+  interpretation page. `NULL` skips the AI call and substitutes a plain
+  coversheet built by `rENM.ai::assemble_coversheet()`: species name,
+  included-figures list, framework citation, timestamp, nothing else. The
+  same coversheet now stands in whenever a requested provider's call
+  fails, so the assembled report always has a title page in that slot,
+  where a failed run previously left the page missing entirely. The
+  returned list gains `ai`, the provider that was requested.
 - `find_trend_percentages()` now runs twice, once on the suitability trend
   and once on the change trend, the second call placed after
   `create_suitability_change_map()` because that is what produces the

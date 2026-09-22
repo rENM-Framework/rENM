@@ -33,8 +33,9 @@
 #'   \item climatic suitability trend analyses,
 #'   \item centroid, velocity, and hotspot analyses,
 #'   \item compilation of report tables, pages, and summary graphics,
-#'   \item assembly and submission of an AI-ready suitability package,
-#'   \item rendering of returned AI documents, and
+#'   \item assembly and submission of an AI-ready suitability package to
+#'     the requested provider, or a plain coversheet when \code{ai = NULL},
+#'   \item rendering of the resulting narrative or coversheet document, and
 #'   \item assembly of the final report.
 #' }
 #'
@@ -79,14 +80,29 @@
 #'   pipeline would otherwise sample. State-level statistics computed over
 #'   a small number of raster cells remain sensitive to that choice.
 #'
+#' @param ai Character scalar, one of \code{"chatgpt"}, \code{"claude"}, or
+#'   \code{NULL}. Default \code{"chatgpt"}.
+#'
+#'   Selects which provider writes the narrative interpretation page:
+#'   \code{"chatgpt"} calls \code{rENM.ai::submit_to_chatgpt()},
+#'   \code{"claude"} calls \code{rENM.ai::submit_to_claude()}. Passing
+#'   \code{NULL} skips the AI call entirely; the report then carries only
+#'   the computed scientific results, with a plain coversheet in place of
+#'   the narrative page (\code{rENM.ai::assemble_coversheet()}: species
+#'   name, included-figures list, framework citation, timestamp). The same
+#'   coversheet is substituted whenever \code{"chatgpt"} or \code{"claude"}
+#'   is requested but the call fails, so the report always has a title
+#'   page even when it carries no generated interpretation.
+#'
 #' @return Invisibly returns a named list containing:
 #' \itemize{
 #'   \item \code{alpha_code}: normalized four-letter species code,
 #'   \item \code{seed}: the random seed used for the run,
-#'   \item \code{ai_narrative}: logical, whether the GenAI narrative section
-#'     was produced. A failure there does not stop the run or the report,
-#'     since the narrative depends on an external service and everything
-#'     else is already computed by that point,
+#'   \item \code{ai}: the requested AI provider, or \code{NULL},
+#'   \item \code{ai_narrative}: logical, whether a language model produced
+#'     the narrative page. \code{FALSE} when \code{ai} was \code{NULL} or
+#'     when the call to that provider failed; either way, the run
+#'     continues and a coversheet stands in for the narrative page,
 #'   \item \code{start_time}: POSIXct start time,
 #'   \item \code{end_time}: POSIXct end time,
 #'   \item \code{elapsed_time}: difftime object giving total elapsed time,
@@ -102,13 +118,15 @@
 #' @examples
 #' \dontrun{
 #' rENM("CASP")
+#' rENM("CASP", ai = "claude")
+#' rENM("CASP", ai = NULL)
 #' }
 #'
 #' @seealso
 #' \code{\link[rENM.core:rENM_project_dir]{rENM.core::rENM_project_dir}}
 #'
 #' @export
-rENM <- function(alpha_code, seed = 42) {
+rENM <- function(alpha_code, seed = 42, ai = "chatgpt") {
 
   if (!is.character(alpha_code) || length(alpha_code) != 1L || is.na(alpha_code)) {
     stop("'alpha_code' must be a single non-missing character value.", call. = FALSE)
@@ -128,6 +146,13 @@ rENM <- function(alpha_code, seed = 42) {
     # the global RNG stream; screen_by_convergence2() is seeded explicitly
     # below because it seeds itself and would otherwise pick its own.
     set.seed(seed)
+  }
+
+  if (!is.null(ai)) {
+    if (!is.character(ai) || length(ai) != 1L || is.na(ai) ||
+        !ai %in% c("chatgpt", "claude")) {
+      stop("'ai' must be one of \"chatgpt\", \"claude\", or NULL.", call. = FALSE)
+    }
   }
 
   .required_pkgs <- c(
@@ -218,6 +243,9 @@ rENM <- function(alpha_code, seed = 42) {
   .log_line(paste0("Random seed:  ",
                    if (is.null(seed)) "none (run is not reproducible)" else seed),
             time = start_time)
+  .log_line(paste0("AI provider:  ",
+                   if (is.null(ai)) "none (coversheet only)" else ai),
+            time = start_time)
   .log_line(paste0("Run start time: ", .timestamp(start_time)),
             time = start_time)
   .log_write(separator, "\n")
@@ -290,21 +318,44 @@ rENM <- function(alpha_code, seed = 42) {
     # Everything of scientific value is computed and written by this point,
     # so a failure here costs the narrative section rather than the run.
     # assemble_final_report() treats that page as optional, so the report
-    # still assembles without it.
-    ai_narrative <- tryCatch({
-      rENM.ai::assemble_ai_package(alpha_code)
-      rENM.ai::submit_to_chatgpt(alpha_code)
-      # rENM.ai::submit_to_claude(alpha_code)
-      rENM.ai::render_ai_docx(alpha_code)
-      TRUE
-    }, error = function(e) {
-      msg <- conditionMessage(e)
-      message("[", .timestamp(Sys.time()), "] GenAI narrative failed for ",
-              alpha_code, "; continuing without it: ", msg)
-      utils::flush.console()
-      .log_line(paste0("GenAI narrative FAILED (run continues): ", msg))
-      FALSE
-    })
+    # still assembles without it. ai = NULL skips the call outright.
+    ai_narrative <- FALSE
+
+    if (!is.null(ai)) {
+      ai_narrative <- tryCatch({
+        rENM.ai::assemble_ai_package(alpha_code)
+        switch(
+          ai,
+          chatgpt = rENM.ai::submit_to_chatgpt(alpha_code),
+          claude  = rENM.ai::submit_to_claude(alpha_code)
+        )
+        rENM.ai::render_ai_docx(alpha_code)
+        TRUE
+      }, error = function(e) {
+        msg <- conditionMessage(e)
+        message("[", .timestamp(Sys.time()), "] GenAI narrative failed for ",
+                alpha_code, "; continuing without it: ", msg)
+        utils::flush.console()
+        .log_line(paste0("GenAI narrative FAILED (run continues): ", msg))
+        FALSE
+      })
+    }
+
+    # No language-model narrative, whether by request (ai = NULL) or because
+    # the call above failed: build the plain coversheet instead, so the
+    # report still has a title page for that slot.
+    if (!ai_narrative) {
+      tryCatch({
+        rENM.ai::assemble_coversheet(alpha_code)
+        rENM.ai::render_ai_docx(alpha_code)
+      }, error = function(e) {
+        msg <- conditionMessage(e)
+        message("[", .timestamp(Sys.time()), "] Coversheet generation failed for ",
+                alpha_code, "; continuing without a narrative page: ", msg)
+        utils::flush.console()
+        .log_line(paste0("Coversheet generation FAILED (run continues): ", msg))
+      })
+    }
 
     # --------------------------------------------------------------------------
     # --- REPORT GENERATION ----------------------------------------------------
@@ -327,6 +378,7 @@ rENM <- function(alpha_code, seed = 42) {
     invisible(list(
       alpha_code   = alpha_code,
       seed         = seed,
+      ai           = ai,
       ai_narrative = ai_narrative,
       start_time   = start_time,
       end_time     = end_time,

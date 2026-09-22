@@ -4,7 +4,7 @@
 \alias{rENM}
 \title{Run the end-to-end rENM pipeline for a single bird species}
 \usage{
-rENM(alpha_code, seed = 42)
+rENM(alpha_code, seed = 42, ai = "chatgpt")
 }
 \arguments{
 \item{alpha_code}{Character scalar. The four-letter bird banding code
@@ -27,16 +27,31 @@ repeatable; it does not make any individual figure more reliable,
 since it simply selects one realization from the distribution the
 pipeline would otherwise sample. State-level statistics computed over
 a small number of raster cells remain sensitive to that choice.}
+
+\item{ai}{Character scalar, one of \code{"chatgpt"}, \code{"claude"}, or
+\code{NULL}. Default \code{"chatgpt"}.
+
+Selects which provider writes the narrative interpretation page:
+\code{"chatgpt"} calls \code{rENM.ai::submit_to_chatgpt()},
+\code{"claude"} calls \code{rENM.ai::submit_to_claude()}. Passing
+\code{NULL} skips the AI call entirely; the report then carries only
+the computed scientific results, with a plain coversheet in place of
+the narrative page (\code{rENM.ai::assemble_coversheet()}: species
+name, included-figures list, framework citation, timestamp). The same
+coversheet is substituted whenever \code{"chatgpt"} or \code{"claude"}
+is requested but the call fails, so the report always has a title
+page even when it carries no generated interpretation.}
 }
 \value{
 Invisibly returns a named list containing:
 \itemize{
 \item \code{alpha_code}: normalized four-letter species code,
 \item \code{seed}: the random seed used for the run,
-\item \code{ai_narrative}: logical, whether the GenAI narrative section
-was produced. A failure there does not stop the run or the report,
-since the narrative depends on an external service and everything
-else is already computed by that point,
+\item \code{ai}: the requested AI provider, or \code{NULL},
+\item \code{ai_narrative}: logical, whether a language model produced
+the narrative page. \code{FALSE} when \code{ai} was \code{NULL} or
+when the call to that provider failed; either way, the run
+continues and a coversheet stands in for the narrative page,
 \item \code{start_time}: POSIXct start time,
 \item \code{end_time}: POSIXct end time,
 \item \code{elapsed_time}: difftime object giving total elapsed time,
@@ -81,8 +96,9 @@ pipeline in sequence, including:
 \item climatic suitability trend analyses,
 \item centroid, velocity, and hotspot analyses,
 \item compilation of report tables, pages, and summary graphics,
-\item assembly and submission of an AI-ready suitability package,
-\item rendering of returned AI documents, and
+\item assembly and submission of an AI-ready suitability package to
+the requested provider, or a plain coversheet when \code{ai = NULL},
+\item rendering of the resulting narrative or coversheet document, and
 \item assembly of the final report.
 }
 
@@ -109,6 +125,8 @@ elapsed time are recorded even if the pipeline terminates early, and
 \examples{
 \dontrun{
 rENM("CASP")
+rENM("CASP", ai = "claude")
+rENM("CASP", ai = NULL)
 }
 
 }
