@@ -26,7 +26,18 @@ Note what this does and does not buy. A fixed seed makes the run
 repeatable; it does not make any individual figure more reliable,
 since it simply selects one realization from the distribution the
 pipeline would otherwise sample. State-level statistics computed over
-a small number of raster cells remain sensitive to that choice.}
+a small number of raster cells remain sensitive to that choice.
+
+Determinism holds within a fixed environment. Two runs with the same
+seed, on the same machine and the same R and package versions,
+produce identical output apart from embedded timestamps. Changing the
+R version, or the versions of the modeling packages underneath
+\code{sdm}, can change which draw a given seed produces.
+
+One stage is seeded independently of this argument:
+\code{analyze_weighted_centroids()} fixes its own seed internally, so
+the centroid regressions are reproducible even when \code{seed} is
+\code{NULL}.}
 
 \item{ai}{Character scalar, one of \code{"chatgpt"}, \code{"claude"}, or
 \code{NULL}. Default \code{"chatgpt"}.
