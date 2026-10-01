@@ -301,9 +301,9 @@ rENM <- function(alpha_code, seed = 42, ai = "chatgpt") {
     rENM.analysis::create_suitability_change_map(alpha_code)
     # Runs here rather than beside the first call, because the change-trend
     # raster it summarizes is produced by the line above. The narrative
-    # reports accelerating and decelerating areas alongside positive and
-    # negative ones, and without this the only source for those figures was
-    # the model's own arithmetic on the raster.
+    # reports positive and negative change-trend areas alongside the
+    # suitability-trend ones, and without this the only source for those
+    # figures was the model's own arithmetic on the raster.
     rENM.analysis::find_trend_percentages(
       alpha_code, layer = "Suitability-Change-Trend"
     )
