@@ -348,6 +348,12 @@ rENM <- function(alpha_code, seed = 42, ai = "chatgpt") {
                 alpha_code, "; continuing without it: ", msg)
         utils::flush.console()
         .log_line(paste0("GenAI narrative FAILED (run continues): ", msg))
+        # The coversheet below would otherwise overwrite the provider document.
+        kept <- .keep_rejected_narrative(run_dir, alpha_code)
+        if (!is.na(kept)) {
+          message("[", .timestamp(Sys.time()), "] Provider narrative kept as ", kept)
+          .log_line(paste0("Provider narrative kept as ", kept))
+        }
         FALSE
       })
     }
@@ -420,4 +426,31 @@ rENM <- function(alpha_code, seed = 42, ai = "chatgpt") {
 
     stop(e)
   })
+}
+
+#' Keep a provider narrative that failed, before the coversheet replaces it
+#'
+#' @details
+#' When the GenAI step fails, \code{rENM()} writes the coversheet under the
+#' same file name as the provider's document, which destroyed the only local
+#' copy of the narrative. A Claude narrative was lost this way after failing
+#' the fixed-text check on nothing more than curly quotes in the citation.
+#' The document is renamed rather than copied so the coversheet can never be
+#' mistaken for it, and report assembly reads only the PDF, so the kept file
+#' cannot reach a report.
+#'
+#' @param run_dir Character. The run directory, \code{runs/<alpha_code>}.
+#' @param alpha_code Character. Upper-case alpha code.
+#'
+#' @return The path of the kept file, or \code{NA} if there was nothing to
+#'   keep or the rename failed.
+#'
+#' @keywords internal
+#' @noRd
+.keep_rejected_narrative <- function(run_dir, alpha_code) {
+  docx <- file.path(run_dir, "Summaries", "pages",
+                    sprintf("%s-Suitability-Trend-Analysis.docx", alpha_code))
+  if (!file.exists(docx)) return(NA_character_)
+  kept <- sub("\\.docx$", "-Rejected.docx", docx)
+  if (file.rename(docx, kept)) kept else NA_character_
 }

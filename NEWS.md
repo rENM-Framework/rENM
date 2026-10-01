@@ -1,4 +1,8 @@
 # rENM 0.2.0.9000
+- When the GenAI step fails, the provider's document is now kept as
+  `<CODE>-Suitability-Trend-Analysis-Rejected.docx` before the coversheet
+  is written. The coversheet uses the same file name and previously
+  overwrote the only local copy of the narrative.
 - Added an `ai` argument to `rENM()`, one of `"chatgpt"` (default),
   `"claude"`, or `NULL`, selecting which provider writes the narrative
   interpretation page. `NULL` skips the AI call and substitutes a plain
