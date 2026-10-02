@@ -1,4 +1,11 @@
 # rENM 0.2.0.9000
+- The default `ai` provider is now `"claude"` (was `"chatgpt"`). On the same
+  CASP run both providers' narratives passed every check, but ChatGPT's read
+  as a filled-in template ("In TX, hot spots cover..." four times) and
+  called the GAP range the "GAP extent", while Claude's was better written
+  and more specific. With `rENM.ai::submit_to_claude()` now on
+  `claude-opus-5-5`, a Claude narrative cost $1.17 against $0.11 for
+  ChatGPT. `ai = "chatgpt"` remains available.
 - `rENM()` records every warning raised during a run, with the pipeline step
   that raised it, and writes a summary to `_log.txt` when the run ends:
   the total, the number of distinct warnings, and each with its count. A

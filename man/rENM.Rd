@@ -4,7 +4,7 @@
 \alias{rENM}
 \title{Run the end-to-end rENM pipeline for a single bird species}
 \usage{
-rENM(alpha_code, seed = 42, ai = "chatgpt")
+rENM(alpha_code, seed = 42, ai = "claude")
 }
 \arguments{
 \item{alpha_code}{Character scalar. The four-letter bird banding code
@@ -39,8 +39,12 @@ One stage is seeded independently of this argument:
 the centroid regressions are reproducible even when \code{seed} is
 \code{NULL}.}
 
-\item{ai}{Character scalar, one of \code{"chatgpt"}, \code{"claude"}, or
-\code{NULL}. Default \code{"chatgpt"}.
+\item{ai}{Character scalar, one of \code{"claude"}, \code{"chatgpt"}, or
+\code{NULL}. Default \code{"claude"}, since 2 October 2026; it was
+\code{"chatgpt"} before. In a side-by-side test on the same CASP run,
+both providers passed every check, but Claude's narrative was better
+written and more specific, and on \code{claude-opus-5-5} it cost about
+$1.20 against about $0.11 for ChatGPT.
 
 Selects which provider writes the narrative interpretation page:
 \code{"chatgpt"} calls \code{rENM.ai::submit_to_chatgpt()},
