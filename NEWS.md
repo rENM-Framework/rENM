@@ -1,4 +1,7 @@
 # rENM 0.2.0.9000
+- The warnings summary in `_log.txt` strips terminal colour codes. Run from
+  RStudio, packages that format messages with cli added escape sequences
+  such as `[38;5;232m` to the logged text.
 - The default `ai` provider is now `"claude"` (was `"chatgpt"`). On the same
   CASP run both providers' narratives passed every check, but ChatGPT's read
   as a filled-in template ("In TX, hot spots cover..." four times) and

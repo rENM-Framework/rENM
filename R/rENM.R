@@ -275,7 +275,10 @@ rENM <- function(alpha_code, seed = 42, ai = "claude") {
                     character(1))
     step  <- grep("^rENM\\.(core|data|model|analysis|ai|reports)::", calls, value = TRUE)
     step  <- if (length(step)) sub("^rENM\\.[a-z]+::", "", step[[1L]]) else "rENM"
-    msg   <- gsub("[[:space:]]+", " ", trimws(conditionMessage(w)))
+    # Packages that format messages with cli add terminal colour codes when
+    # the session supports colour, as RStudio does; they are noise in a log.
+    msg   <- gsub("\033\\[[0-9;]*m", "", conditionMessage(w))
+    msg   <- gsub("[[:space:]]+", " ", trimws(msg))
     if (nchar(msg) > 200L) msg <- paste0(substr(msg, 1L, 197L), "...")
     .warnings <<- c(.warnings, paste0(step, "(): ", msg))
   }
