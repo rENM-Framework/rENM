@@ -1,4 +1,10 @@
 # rENM 0.2.0.9000
+- `rENM()` records every warning raised during a run, with the pipeline step
+  that raised it, and writes a summary to `_log.txt` when the run ends:
+  the total, the number of distinct warnings, and each with its count. A
+  batch run under `Rscript` previously ended with "There were 22 warnings"
+  and no record of what they were. Warnings still reach the console as
+  before.
 - When the GenAI step fails, the provider's document is now kept as
   `<CODE>-Suitability-Trend-Analysis-Rejected.docx` before the coversheet
   is written. The coversheet uses the same file name and previously

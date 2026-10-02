@@ -261,7 +261,36 @@ rENM <- function(alpha_code, seed = 42, ai = "chatgpt") {
             time = start_time)
   .log_write(separator, "\n")
 
-  tryCatch({
+  # Warnings are recorded as they occur and summarized in the run log when the
+  # run ends. Without this a batch run under Rscript ended with "There were 22
+  # warnings" and no record of what they were or which step raised them.
+  # Recording does not muffle: each warning still reaches the console.
+  .warnings <- character(0)
+  .record_warning <- function(w) {
+    calls <- vapply(sys.calls(), function(cl) paste(deparse(cl[[1L]]), collapse = ""),
+                    character(1))
+    step  <- grep("^rENM\\.(core|data|model|analysis|ai|reports)::", calls, value = TRUE)
+    step  <- if (length(step)) sub("^rENM\\.[a-z]+::", "", step[[1L]]) else "rENM"
+    msg   <- gsub("[[:space:]]+", " ", trimws(conditionMessage(w)))
+    if (nchar(msg) > 200L) msg <- paste0(substr(msg, 1L, 197L), "...")
+    .warnings <<- c(.warnings, paste0(step, "(): ", msg))
+  }
+
+  on.exit({
+    if (length(.warnings)) {
+      tab <- sort(table(.warnings), decreasing = TRUE)
+      .log_write(separator, "\n")
+      .log_line(sprintf("Warnings during this run: %d (%d distinct)",
+                        length(.warnings), length(tab)))
+      for (k in seq_along(tab)) {
+        .log_write(sprintf("  %3d x %s\n", tab[[k]], names(tab)[[k]]))
+      }
+    } else {
+      .log_line("Warnings during this run: none")
+    }
+  }, add = TRUE, after = FALSE)
+
+  withCallingHandlers(tryCatch({
 
     # ==========================================================================
     # rENM processing pipeline
@@ -425,7 +454,7 @@ rENM <- function(alpha_code, seed = 42, ai = "chatgpt") {
     .log_write(separator, "\n")
 
     stop(e)
-  })
+  }), warning = .record_warning)
 }
 
 #' Keep a provider narrative that failed, before the coversheet replaces it
