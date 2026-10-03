@@ -84,7 +84,7 @@ library(rENM)
 rENM("CASP")
 ```
 
-The function accepts any four-letter bird banding code. The project directory is resolved automatically via `rENM.core::rENM_project_dir()`, which reads from the `rENM.project_dir` option or the `RENM_PROJECT_DIR` environment variable.
+The function accepts any four-letter bird banding code. Two arguments matter most. `seed` fixes the run's random draws (default 42), so a rerun on the same machine and package versions gives identical results apart from timestamps. `ai` names the provider that writes the report's opening narrative: `"claude"` (default), `"chatgpt"`, or `NULL` for a plain coversheet with no generated text. See `?rENM`. The project directory is resolved automatically via `rENM.core::rENM_project_dir()`, which reads from the `rENM.project_dir` option or the `RENM_PROJECT_DIR` environment variable.
 
 ## Pipeline stages
 
@@ -99,8 +99,8 @@ The function accepts any four-letter bird banding code. The project directory is
 7.  Climatic suitability trend analysis
 8.  Centroid, velocity, and hotspot analysis
 9.  Report table and summary page compilation
-10. AI-ready package assembly and submission
-11. AI document rendering
+10. AI-ready package assembly and submission, or a plain coversheet
+11. Opening-page rendering
 12. Final report assembly
 
 Progress and timing are logged to:
@@ -108,6 +108,8 @@ Progress and timing are logged to:
 ```         
 <project-dir>/runs/<alpha_code>/_log.txt
 ```
+
+The log ends with a count of the warnings raised during the run.
 
 ## License
 

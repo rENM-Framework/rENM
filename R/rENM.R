@@ -53,7 +53,14 @@
 #' environment variable.
 #'
 #' Log entries are written in the framework's standard timestamped format
-#' and bracketed with 72-character separator lines for readability.
+#' and bracketed with 72-character separator lines for readability. The
+#' log ends with a count of the warnings raised during the run, each
+#' recorded with the pipeline step that raised it.
+#'
+#' A provider narrative that fails the checks in
+#' \code{rENM.ai::render_ai_docx()} does not stop the run. It is kept as
+#' \code{<alpha_code>-Suitability-Trend-Analysis-Rejected.docx} and a
+#' coversheet takes its place.
 #'
 #' The function uses \code{on.exit()} to guarantee that end time and
 #' elapsed time are recorded even if the pipeline terminates early, and
