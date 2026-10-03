@@ -164,9 +164,10 @@ rENM <- function(alpha_code, seed = 42, ai = "claude") {
     if (!is.numeric(seed) || length(seed) != 1L || !is.finite(seed)) {
       stop("'seed' must be a finite numeric scalar or NULL.", call. = FALSE)
     }
-    # Covers limit_record_count() and create_ensemble_model(), which draw on
-    # the global RNG stream; screen_by_convergence2() is seeded explicitly
-    # below because it seeds itself and would otherwise pick its own.
+    # Covers limit_record_count(), which draws on the global RNG stream.
+    # screen_by_convergence2() and create_timeseries() are passed the seed
+    # below, because both run in parallel workers and seed per iteration or
+    # per year.
     set.seed(seed)
   }
 
