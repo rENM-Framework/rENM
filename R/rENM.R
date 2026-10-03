@@ -102,8 +102,9 @@
 #'   \code{NULL}. Default \code{"claude"}, since 2 October 2026; it was
 #'   \code{"chatgpt"} before. In a side-by-side test on the same CASP run,
 #'   both providers passed every check, but Claude's narrative was better
-#'   written and more specific, and on \code{claude-opus-5-5} it cost about
-#'   $1.20 against about $0.11 for ChatGPT.
+#'   written and more specific. On \code{claude-opus-5-5} a Claude narrative
+#'   has cost $1.20 to $1.90, depending on how many steps the model takes,
+#'   against about $0.11 for ChatGPT.
 #'
 #'   Selects which provider writes the narrative interpretation page:
 #'   \code{"chatgpt"} calls \code{rENM.ai::submit_to_chatgpt()},
