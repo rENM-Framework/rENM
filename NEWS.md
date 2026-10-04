@@ -1,4 +1,6 @@
 # rENM 0.2.0.9000
+- The coversheet is rendered with `render_ai_docx(narrative = FALSE)`, so
+  runs with `ai = NULL` no longer log false prose-fault warnings.
 - `rENM()` now sets the extent before thinning and clips occurrence
   records to it (`rENM.data::clip_occurrences()`). Thinning and the
   250-record cap previously ran first, on every record in a bin, and

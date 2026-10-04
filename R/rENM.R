@@ -414,7 +414,7 @@ rENM <- function(alpha_code, seed = 42, ai = "claude") {
     if (!ai_narrative) {
       tryCatch({
         rENM.ai::assemble_coversheet(alpha_code)
-        rENM.ai::render_ai_docx(alpha_code)
+        rENM.ai::render_ai_docx(alpha_code, narrative = FALSE)
       }, error = function(e) {
         msg <- conditionMessage(e)
         message("[", .timestamp(Sys.time()), "] Coversheet generation failed for ",
