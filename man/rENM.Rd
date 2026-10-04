@@ -104,8 +104,9 @@ pipeline in sequence, including:
 
 \enumerate{
 \item extraction and preparation of eBird occurrence records,
-\item spatial thinning and record limiting,
 \item range-based extent determination,
+\item clipping of occurrence records to the extent,
+\item spatial thinning and record limiting,
 \item extraction and staging of MERRA environmental variables,
 \item stochastic variable screening,
 \item construction of a 5-year-binned rENM time series,

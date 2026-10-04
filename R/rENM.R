@@ -25,8 +25,9 @@
 #'
 #' \enumerate{
 #'   \item extraction and preparation of eBird occurrence records,
-#'   \item spatial thinning and record limiting,
 #'   \item range-based extent determination,
+#'   \item clipping of occurrence records to the extent,
+#'   \item spatial thinning and record limiting,
 #'   \item extraction and staging of MERRA environmental variables,
 #'   \item stochastic variable screening,
 #'   \item construction of a 5-year-binned rENM time series,
@@ -317,10 +318,14 @@ rENM <- function(alpha_code, seed = 42, ai = "claude") {
 
     rENM.data::get_ebird_occurrences(alpha_code)
     rENM.data::remove_duplicate_occurrences(alpha_code)
+    # The extent comes from the GAP range polygon, not the records, so it can
+    # be set first. Clipping to it before thinning and capping keeps records
+    # the models could never use from taking places under the record cap.
+    rENM.data::find_range_extent(alpha_code)
+    rENM.data::clip_occurrences(alpha_code)
     rENM.data::thin_occurrences2(alpha_code)
     rENM.data::limit_record_count(alpha_code)
     rENM.data::tidy_occurrences(alpha_code)
-    rENM.data::find_range_extent(alpha_code)
     rENM.data::get_merra_variables(alpha_code)
 
     # --------------------------------------------------------------------------

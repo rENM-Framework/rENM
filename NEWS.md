@@ -1,4 +1,13 @@
 # rENM 0.2.0.9000
+- `rENM()` now sets the extent before thinning and clips occurrence
+  records to it (`rENM.data::clip_occurrences()`). Thinning and the
+  250-record cap previously ran first, on every record in a bin, and
+  records outside the extent were dropped only later, when `sdm` found no
+  predictor values for them. They therefore took places under the cap. For
+  Grace's Warbler, whose eBird records extend well into Mexico, only 126 to
+  181 of each bin's 250 records reached the models; Pinyon Jay and Cassin's
+  Sparrow lost almost none. The step order changed in v0.2.0, when the
+  default extent moved from the records themselves to the buffered GAP range.
 - The warnings summary in `_log.txt` strips terminal colour codes. Run from
   RStudio, packages that format messages with cli added escape sequences
   such as `[38;5;232m` to the logged text.
